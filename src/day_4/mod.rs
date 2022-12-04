@@ -10,15 +10,15 @@ mod tests {
                 start: start.parse().expect("Failed to parse to u32"),
                 end: end.parse().expect("Failed to parse to u32"),
             },
-            _ => unreachable!("Malformed input"),
+            _ => unreachable!("Malformed input, should be a `-` delimited tuple"),
         }
     }
 
     fn intersection(range_1: &Range<u32>, range_2: &Range<u32>) -> Option<Range<u32>> {
-        if (range_2.start > range_1.end) | (range_1.start > range_2.end) {
-            return None;
+        match (range_2.start > range_1.end) | (range_1.start > range_2.end) {
+            true => None,
+            false => Some(max(range_1.start, range_2.start)..min(range_1.end, range_2.end)),
         }
-        Some(max(range_1.start, range_2.start)..min(range_1.end, range_2.end))
     }
 
     #[test]
@@ -28,8 +28,7 @@ mod tests {
         let result = input
             .split("\n")
             .filter_map(|row| {
-                let ranges = row.split_once(",");
-                match ranges {
+                match row.split_once(",") {
                     Some((range_1, range_2)) => {
                         let range_1 = convert_to_range(range_1);
                         let range_2 = convert_to_range(range_2);
@@ -52,8 +51,7 @@ mod tests {
         let result = input
             .split("\n")
             .filter_map(|row| {
-                let ranges = row.split_once(",");
-                match ranges {
+                match row.split_once(",") {
                     Some((range_1, range_2)) => {
                         let range_1 = convert_to_range(range_1);
                         let range_2 = convert_to_range(range_2);
