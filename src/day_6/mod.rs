@@ -6,7 +6,7 @@ fn marker(signal: &[char], marker_length: usize) -> usize {
             let mut chars = chars.to_vec();
             chars.sort();
             chars.dedup();
-            chars.into_iter().count() == marker_length
+            chars.len() == marker_length
         }) {
         Some((index, _)) => index + marker_length,
         _ => unreachable!("Malformed Input"),

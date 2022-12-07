@@ -31,10 +31,10 @@ impl PartialOrd for Guess {
 
 impl Guess {
     fn score(&self) -> usize {
-        match self {
-            &Guess::Rock => 1,
-            &Guess::Paper => 2,
-            &Guess::Scissors => 3,
+        match *self {
+            Guess::Rock => 1,
+            Guess::Paper => 2,
+            Guess::Scissors => 3,
         }
     }
 }
@@ -46,12 +46,10 @@ struct Game {
 
 impl Game {
     fn score_game(&self) -> usize {
-        if self.my_choice > self.opponent_choice {
-            6 + self.my_choice.score()
-        } else if self.my_choice == self.opponent_choice {
-            3 + self.my_choice.score()
-        } else {
-            0 + self.my_choice.score()
+        match self.my_choice.cmp(&self.opponent_choice) {
+            Ordering::Greater => 6 + self.my_choice.score(),
+            Ordering::Equal => 3 + self.my_choice.score(),
+            Ordering::Less => self.my_choice.score(),
         }
     }
 }
@@ -61,9 +59,9 @@ mod tests {
 
     fn parse_challenge_1(input: &str) -> Vec<Game> {
         input
-            .split("\n")
+            .split('\n')
             .map(|game| {
-                let game = game.split(" ").collect::<Vec<_>>();
+                let game = game.split(' ').collect::<Vec<_>>();
                 assert_eq!(game.len(), 2);
                 let opponent_choice = match game[0] {
                     "A" => Guess::Rock,
@@ -97,9 +95,9 @@ mod tests {
 
     fn parse_challenge_2(input: &str) -> Vec<Game> {
         input
-            .split("\n")
+            .split('\n')
             .map(|game| {
-                let game = game.split(" ").collect::<Vec<_>>();
+                let game = game.split(' ').collect::<Vec<_>>();
                 assert_eq!(game.len(), 2);
                 let opponent_choice = match game[0] {
                     "A" => Guess::Rock,

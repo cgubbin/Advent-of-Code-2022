@@ -17,8 +17,8 @@ mod tests {
                 "{}",
                 self.0
                     .iter()
-                    .filter_map(|column| column.last().clone())
-                    .map(|&ch| ch)
+                    .filter_map(|column| column.last())
+                    .copied()
                     .collect::<String>()
             )
         }
@@ -26,7 +26,7 @@ mod tests {
 
     fn parse_initial_state(initial_state: &str) -> State {
         // Split off the column names
-        match initial_state.rsplit_once("\n") {
+        match initial_state.rsplit_once('\n') {
             Some((initial_state, column_names)) => {
                 // As all columns can be empty we get the number of columns from the labels
                 let number_of_columns = column_names.split_whitespace().count();
@@ -36,35 +36,35 @@ mod tests {
                     let mut index = 0;
                     while let Some(substring) = row.get(index..index + 3) {
                         let mut chars = substring.chars();
-                        match chars.next() {
-                            // There is a crate
-                            Some('[') => {
-                                if let Some(ch) = chars.next() {
-                                    state.0[index as usize / 4].push(ch);
-                                }
+                        if let Some('[') = chars.next() {
+                            if let Some(ch) = chars.next() {
+                                state.0[index / 4].push(ch);
                             }
-                            // There is no crate
-                            _ => {}
-                        };
+                        }
                         index += 4;
                     }
                 });
-                return state;
+                state
             }
             _ => unreachable!("Malformed input"),
         }
     }
 
-    fn apply_operations_1(state: &mut State, operations: &str) {
-        operations.split("\n").for_each(|operation| {
-            let operation = operation
-                .splitn(6, " ")
-                .skip(1)
-                .step_by(2)
-                .map(|num| num.parse::<usize>())
-                .collect::<Result<Vec<_>, _>>()
-                .expect("Failed to parse operation to usize");
+    fn parse_operation(operation: &str) -> [usize; 3] {
+        operation
+            .splitn(6, ' ')
+            .skip(1)
+            .step_by(2)
+            .map(|num| num.parse::<usize>())
+            .collect::<Result<Vec<_>, _>>()
+            .expect("Failed to parse operation to usize")
+            .try_into()
+            .expect("Expected exactly 3 elements")
+    }
 
+    fn apply_operations_1(state: &mut State, operations: &str) {
+        operations.split('\n').for_each(|operation| {
+            let operation = parse_operation(operation);
             for _ in 0..operation[0] {
                 match state.0[operation[1] - 1].pop() {
                     Some(cr) => state.0[operation[2] - 1].push(cr),
@@ -75,14 +75,8 @@ mod tests {
     }
 
     fn apply_operations_2(state: &mut State, operations: &str) {
-        operations.split("\n").for_each(|operation| {
-            let operation = operation
-                .splitn(6, " ")
-                .skip(1) // Skip `moves`
-                .step_by(2) // Retain only numerical cols
-                .map(|num| num.parse::<usize>())
-                .collect::<Result<Vec<_>, _>>()
-                .expect("Failed to parse operation to usize");
+        operations.split('\n').for_each(|operation| {
+            let operation = parse_operation(operation);
 
             let split_index = state.0[operation[1] - 1].len() - operation[0];
 

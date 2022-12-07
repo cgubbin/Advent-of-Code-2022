@@ -38,8 +38,7 @@ impl Compartment {
     fn find_badge(&self, others: &[Self]) -> Option<char> {
         let conflicts = others
             .iter()
-            .map(|other| self.find_conflict(other))
-            .flatten()
+            .flat_map(|other| self.find_conflict(other))
             .collect::<Vec<_>>();
 
         let mut occurrences = HashMap::new();
@@ -48,7 +47,7 @@ impl Compartment {
             *occurrences.entry(ch).or_insert(1) += 1;
         }
 
-        if occurrences.len() == 0 {
+        if occurrences.is_empty() {
             return None;
         }
 
@@ -71,7 +70,7 @@ mod tests {
     fn day_3_challenge_1() {
         let input = include_str!("input").trim();
         let result = input
-            .split("\n")
+            .split('\n')
             .map(|rucksack| {
                 let number_of_items = rucksack.len() / 2;
                 let contents = [&rucksack[..number_of_items], &rucksack[number_of_items..]];
@@ -81,7 +80,7 @@ mod tests {
                 assert!(conflict_score.is_some());
                 conflict_score.unwrap()
             })
-            .fold(0u32, |a, b| a + b);
+            .sum::<u32>();
         assert_eq!(result, 7848);
     }
 
@@ -89,7 +88,7 @@ mod tests {
     fn day_3_challenge_2() {
         let input = include_str!("input").trim();
         let result = input
-            .split("\n")
+            .split('\n')
             .array_chunks()
             .map(|[rucksack_1, rucksack_2, rucksack_3]| {
                 let rucksacks = [rucksack_1, rucksack_2, rucksack_3];
@@ -101,7 +100,7 @@ mod tests {
                 assert!(score.is_some());
                 score.unwrap()
             })
-            .fold(0u32, |a, b| a + b);
+            .sum::<u32>();
         assert_eq!(result, 2616);
     }
 }

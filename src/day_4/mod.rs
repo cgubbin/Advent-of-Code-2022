@@ -5,7 +5,7 @@ mod tests {
     use std::ops::Range;
 
     fn convert_to_range(range: &str) -> Range<u16> {
-        match range.split_once("-") {
+        match range.split_once('-') {
             Some((start, end)) => Range {
                 start: start.parse().expect("Failed to parse to u16"),
                 end: end.parse().expect("Failed to parse to u16"),
@@ -26,9 +26,9 @@ mod tests {
         let input = include_str!("input").trim();
 
         let result = input
-            .split("\n")
+            .split('\n')
             .filter_map(|row| {
-                match row.split_once(",") {
+                match row.split_once(',') {
                     Some((range_1, range_2)) => {
                         let range_1 = convert_to_range(range_1);
                         let range_2 = convert_to_range(range_2);
@@ -49,9 +49,9 @@ mod tests {
         let input = include_str!("input").trim();
 
         let result = input
-            .split("\n")
+            .split('\n')
             .filter_map(|row| {
-                match row.split_once(",") {
+                match row.split_once(',') {
                     Some((range_1, range_2)) => {
                         let range_1 = convert_to_range(range_1);
                         let range_2 = convert_to_range(range_2);

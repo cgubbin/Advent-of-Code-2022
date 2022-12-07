@@ -41,11 +41,11 @@ impl Elf {
             .split("\n\n") // Split between blocks
             .map(|values| {
                 values
-                    .split("\n") // Split between items
+                    .split('\n') // Split between items
                     .map(|calories| calories.parse::<u64>().unwrap())
-                    .fold(0u64, |a, b| a + b)
+                    .sum()
             })
-            .map(|calories| Elf(calories))
+            .map(Elf)
             .collect()
     }
 
